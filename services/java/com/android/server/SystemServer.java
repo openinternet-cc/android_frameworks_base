@@ -175,7 +175,6 @@ import lineageos.providers.LineageSettings;
 
 public final class SystemServer {
 
-    public static final openinternet = true;
 
     private static final String TAG = "SystemServer";
 
@@ -934,6 +933,8 @@ public final class SystemServer {
         boolean enableVrService = context.getPackageManager().hasSystemFeature(
                 PackageManager.FEATURE_VR_MODE_HIGH_PERFORMANCE);
 
+        final boolean openinternet = false;
+
         // For debugging RescueParty
         if (Build.IS_DEBUGGABLE && SystemProperties.getBoolean("debug.crash_system", false)) {
             throw new RuntimeException();
@@ -1256,7 +1257,7 @@ public final class SystemServer {
             mSystemServiceManager.startService(DevicePolicyManagerService.Lifecycle.class);
             traceEnd();
 
-            if (!isWatch && !openinternet) {
+            if (!isWatch) { // renable
                 traceBeginAndSlog("StartStatusBarManagerService");
                 try {
                     statusBar = new StatusBarManagerService(context, wm);
@@ -1623,11 +1624,13 @@ public final class SystemServer {
                 traceEnd();
             }
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)
-                    || context.getResources().getBoolean(R.bool.config_enableAppWidgetService) && !openinternet) {
-                traceBeginAndSlog("StartAppWidgetService");
-                mSystemServiceManager.startService(APPWIDGET_SERVICE_CLASS);
-                traceEnd();
+            if (!openinternet) {
+                if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)
+                        || context.getResources().getBoolean(R.bool.config_enableAppWidgetService)) {
+                    traceBeginAndSlog("StartAppWidgetService");
+                    mSystemServiceManager.startService(APPWIDGET_SERVICE_CLASS);
+                    traceEnd();
+                }
             }
 
             // Grants default permissions and defines roles
@@ -1763,11 +1766,13 @@ public final class SystemServer {
                 traceEnd();
             }
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LIVE_TV && !openinternet)
-                    || mPackageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)) {
-                traceBeginAndSlog("StartTvInputManager");
-                mSystemServiceManager.startService(TvInputManagerService.class);
-                traceEnd();
+            if (!openinternet) {
+                if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LIVE_TV)
+                        || mPackageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)) {
+                    traceBeginAndSlog("StartTvInputManager");
+                    mSystemServiceManager.startService(TvInputManagerService.class);
+                    traceEnd();
+                }
             }
 
             if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) && !openinternet) {
@@ -1955,11 +1960,9 @@ public final class SystemServer {
         }
 
         // NOTE: ClipboardService depends on ContentCapture and Autofill
-        if (!openinternet) {
-            traceBeginAndSlog("StartClipboardService");
-            mSystemServiceManager.startService(ClipboardService.class);
-            traceEnd();
-        }
+        traceBeginAndSlog("StartClipboardService");
+        mSystemServiceManager.startService(ClipboardService.class);
+        traceEnd();
 
         traceBeginAndSlog("AppServiceManager");
         mSystemServiceManager.startService(AppBindingService.Lifecycle.class);

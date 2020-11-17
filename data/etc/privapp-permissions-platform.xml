@@ -20,6 +20,7 @@ This XML file declares which signature|privileged permissions should be granted 
 applications that come with the platform
 -->
 <permissions>
+    
     <privapp-permissions package="android.ext.services">
         <permission name="android.permission.PROVIDE_RESOLVER_RANKER_SERVICE" />
         <permission name="android.permission.MONITOR_DEFAULT_SMS_PACKAGE" />

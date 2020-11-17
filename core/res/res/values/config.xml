@@ -61,7 +61,7 @@
         <item><xliff:g id="id">@string/status_bar_sensors_off</xliff:g></item>
     </string-array>
 
-    <string translatable="false" name="status_bar_rotate">rotate</string>
+ <string translatable="false" name="status_bar_rotate">rotate</string>
     <string translatable="false" name="status_bar_headset">headset</string>
     <string translatable="false" name="status_bar_data_saver">data_saver</string>
     <string translatable="false" name="status_bar_managed_profile">managed_profile</string>
@@ -94,7 +94,6 @@
     <string translatable="false" name="status_bar_camera">camera</string>
     <string translatable="false" name="status_bar_airplane">airplane</string>
     <string translatable="false" name="status_bar_sensors_off">sensors_off</string>
-
     <!-- Flag indicating whether the surface flinger has limited
          alpha compositing functionality in hardware.  If set, the window
          manager will disable alpha trasformation in animations where not
@@ -993,7 +992,8 @@
              1 - MODE_NIGHT_NO
              2 - MODE_NIGHT_YES
     -->
-    <integer name="config_defaultNightMode">1</integer>
+    
+    <integer name="config_defaultNightMode">2</integer>
 
     <!-- Boolean indicating whether the HWC setColorTransform function can be performed efficiently
          in hardware. -->
@@ -1718,7 +1718,8 @@
     <bool name="config_enableWallpaperService">true</bool>
 
     <!-- True if the device should block turning display on at boot until wallpaper is ready -->
-    <bool name="config_checkWallpaperAtBoot">true</bool>
+    <!-- openinternet hax -->
+    <bool name="config_checkWallpaperAtBoot">false</bool>
 
     <!-- Class name of WallpaperManagerService. -->
     <string name="config_wallpaperManagerServiceName" translatable="false">com.android.server.wallpaper.WallpaperManagerService</string>
@@ -2818,7 +2819,8 @@
 
     <!-- Determines whether recent tasks are provided to the user. Default device has recents
          property. If this is false, then the following recents config flags are ignored. -->
-    <bool name="config_hasRecents">true</bool>
+    <!-- openinternet hax -->
+    <bool name="config_hasRecents">false</bool>
 
     <!-- Component name for the activity that will be presenting the Recents UI, which will receive special permissions for API related
           to fetching and presenting recent tasks. The default configuration uses Launcehr3QuickStep as default launcher and points to

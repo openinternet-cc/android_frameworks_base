@@ -507,8 +507,8 @@ public final class BatteryService extends SystemService {
             // Should never happen.
         }
 
-        shutdownIfNoPowerLocked();
-        shutdownIfOverTempLocked();
+        //shutdownIfNoPowerLocked();
+        //shutdownIfOverTempLocked();
 
         if (force || (mHealthInfo.batteryStatus != mLastBatteryStatus ||
                 mHealthInfo.batteryHealth != mLastBatteryHealth ||

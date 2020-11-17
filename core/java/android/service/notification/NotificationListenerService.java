@@ -2023,7 +2023,7 @@ public abstract class NotificationListenerService extends Service {
 
         @Override
         public void handleMessage(Message msg) {
-            if (!isConnected) {
+            if (!isConnected || true) {
                 return;
             }
             switch (msg.what) {
