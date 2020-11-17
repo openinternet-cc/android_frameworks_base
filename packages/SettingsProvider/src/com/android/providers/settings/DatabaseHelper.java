@@ -2347,7 +2347,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
             // Don't do this.  The SystemServer will initialize ADB_ENABLED from a
             // persistent system property instead.
-            //loadSetting(stmt, Settings.Secure.ADB_ENABLED, 0);
+            // LOL. d5150edf1214b8a3d9c9fd69180a3fb5e20cb916 @ comma hax
+
+            loadSetting(stmt, Settings.Secure.ADB_ENABLED, 1);
 
             // Allow mock locations default, based on build
             loadSetting(stmt, Settings.Secure.ALLOW_MOCK_LOCATION,
@@ -2470,10 +2472,13 @@ class DatabaseHelper extends SQLiteOpenHelper {
             loadBooleanSetting(stmt, Settings.Global.AUTO_TIME_ZONE,
                     R.bool.def_auto_time_zone); // Sync timezone to NITZ
 
-            loadSetting(stmt, Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
-                    ("1".equals(SystemProperties.get("ro.kernel.qemu")) ||
-                        res.getBoolean(R.bool.def_stay_on_while_plugged_in))
-                     ? 1 : 0);
+            //loadSetting(stmt, Settings.Global.STAY_ON_WHILE_PLUGGED_IN,
+            //        ("1".equals(SystemProperties.get("ro.kernel.qemu")) ||
+            //            res.getBoolean(R.bool.def_stay_on_while_plugged_in))
+            //         ? 1 : 0);
+
+            // stay on while plugged in
+            loadSetting(stmt, Settings.Global.STAY_ON_WHILE_PLUGGED_IN, "2");
 
             loadIntegerSetting(stmt, Settings.Global.WIFI_SLEEP_POLICY,
                     R.integer.def_wifi_sleep_policy);

@@ -175,6 +175,8 @@ import lineageos.providers.LineageSettings;
 
 public final class SystemServer {
 
+    public static final openinternet = true;
+
     private static final String TAG = "SystemServer";
 
     // Tag for timing measurement of main thread.
@@ -447,7 +449,7 @@ public final class SystemServer {
             SQLiteCompatibilityWalFlags.init(null);
 
             // Here we go!
-            Slog.i(TAG, "Entered the Android system server!");
+            Slog.i(TAG, "Entered the (modded) Android system server!");
             int uptimeMillis = (int) SystemClock.elapsedRealtime();
             EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_SYSTEM_RUN, uptimeMillis);
             if (!mRuntimeRestart) {
@@ -1254,7 +1256,7 @@ public final class SystemServer {
             mSystemServiceManager.startService(DevicePolicyManagerService.Lifecycle.class);
             traceEnd();
 
-            if (!isWatch) {
+            if (!isWatch && !openinternet) {
                 traceBeginAndSlog("StartStatusBarManagerService");
                 try {
                     statusBar = new StatusBarManagerService(context, wm);
@@ -1315,9 +1317,11 @@ public final class SystemServer {
             }
             traceEnd();
 
-            traceBeginAndSlog("StartTextServicesManager");
-            mSystemServiceManager.startService(TextServicesManagerService.Lifecycle.class);
-            traceEnd();
+            if (!openinternet) {
+                traceBeginAndSlog("StartTextServicesManager");
+                mSystemServiceManager.startService(TextServicesManagerService.Lifecycle.class);
+                traceEnd();
+            }
 
             if (!disableSystemTextClassifier) {
                 traceBeginAndSlog("StartTextClassificationManagerService");
@@ -1429,14 +1433,16 @@ public final class SystemServer {
             }
             traceEnd();
 
-            traceBeginAndSlog("StartUpdateLockService");
-            try {
-                ServiceManager.addService(Context.UPDATE_LOCK_SERVICE,
-                        new UpdateLockService(context));
-            } catch (Throwable e) {
-                reportWtf("starting UpdateLockService", e);
+            if (!openinternet) {
+                traceBeginAndSlog("StartUpdateLockService");
+                try {
+                    ServiceManager.addService(Context.UPDATE_LOCK_SERVICE,
+                            new UpdateLockService(context));
+                } catch (Throwable e) {
+                    reportWtf("starting UpdateLockService", e);
+                }
+                traceEnd();
             }
-            traceEnd();
 
             traceBeginAndSlog("StartNotificationManager");
             mSystemServiceManager.startService(NotificationManagerService.class);
@@ -1479,7 +1485,7 @@ public final class SystemServer {
                 traceEnd();
             }
 
-            if (!isWatch) {
+            if (!isWatch && !openinternet) {
                 traceBeginAndSlog("StartSearchManagerService");
                 try {
                     mSystemServiceManager.startService(SEARCH_MANAGER_SERVICE_CLASS);
@@ -1489,12 +1495,14 @@ public final class SystemServer {
                 traceEnd();
             }
 
-            if (context.getResources().getBoolean(R.bool.config_enableWallpaperService)) {
-                traceBeginAndSlog("StartWallpaperManagerService");
-                mSystemServiceManager.startService(WALLPAPER_SERVICE_CLASS);
-                traceEnd();
-            } else {
-                Slog.i(TAG, "Wallpaper service disabled by config");
+            if (!openinternet) {
+                if (context.getResources().getBoolean(R.bool.config_enableWallpaperService)) {
+                    traceBeginAndSlog("StartWallpaperManagerService");
+                    mSystemServiceManager.startService(WALLPAPER_SERVICE_CLASS);
+                    traceEnd();
+                } else {
+                    Slog.i(TAG, "Wallpaper service disabled by config");
+                }
             }
 
             traceBeginAndSlog("StartAudioService");
@@ -1517,9 +1525,11 @@ public final class SystemServer {
                 traceEnd();
             }
 
-            traceBeginAndSlog("StartDockObserver");
-            mSystemServiceManager.startService(DockObserver.class);
-            traceEnd();
+            if (!openinternet) {
+                traceBeginAndSlog("StartDockObserver");
+                mSystemServiceManager.startService(DockObserver.class);
+                traceEnd();
+            }
 
             if (isWatch) {
                 traceBeginAndSlog("StartThermalObserver");
@@ -1537,7 +1547,7 @@ public final class SystemServer {
             }
             traceEnd();
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_MIDI)) {
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_MIDI) && !openinternet) {
                 // Start MIDI Manager service
                 traceBeginAndSlog("StartMidiManager");
                 mSystemServiceManager.startService(MIDI_SERVICE_CLASS);
@@ -1585,9 +1595,11 @@ public final class SystemServer {
             }
             traceEnd();
 
-            traceBeginAndSlog("StartTwilightService");
-            mSystemServiceManager.startService(TwilightService.class);
-            traceEnd();
+            if (!openinternet) {
+                traceBeginAndSlog("StartTwilightService");
+                mSystemServiceManager.startService(TwilightService.class);
+                traceEnd();
+            }
 
             traceBeginAndSlog("StartColorDisplay");
             mSystemServiceManager.startService(ColorDisplayService.class);
@@ -1605,14 +1617,14 @@ public final class SystemServer {
             mSystemServiceManager.startService(TrustManagerService.class);
             traceEnd();
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_BACKUP)) {
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_BACKUP) && !openinternet) {
                 traceBeginAndSlog("StartBackupManager");
                 mSystemServiceManager.startService(BACKUP_MANAGER_SERVICE_CLASS);
                 traceEnd();
             }
 
             if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_APP_WIDGETS)
-                    || context.getResources().getBoolean(R.bool.config_enableAppWidgetService)) {
+                    || context.getResources().getBoolean(R.bool.config_enableAppWidgetService) && !openinternet) {
                 traceBeginAndSlog("StartAppWidgetService");
                 mSystemServiceManager.startService(APPWIDGET_SERVICE_CLASS);
                 traceEnd();
@@ -1632,7 +1644,7 @@ public final class SystemServer {
             mSystemServiceManager.startService(VOICE_RECOGNITION_MANAGER_SERVICE_CLASS);
             traceEnd();
 
-            if (GestureLauncherService.isGestureLauncherEnabled(context.getResources())) {
+            if (GestureLauncherService.isGestureLauncherEnabled(context.getResources()) && !openinternet) {
                 traceBeginAndSlog("StartGestureLauncher");
                 mSystemServiceManager.startService(GestureLauncherService.class);
                 traceEnd();
@@ -1705,15 +1717,19 @@ public final class SystemServer {
                 traceEnd();
             }
 
-            // Dreams (interactive idle-time views, a/k/a screen savers, and doze mode)
-            traceBeginAndSlog("StartDreamManager");
-            mSystemServiceManager.startService(DreamManagerService.class);
-            traceEnd();
+            if (!openinternet) {
+                // Dreams (interactive idle-time views, a/k/a screen savers, and doze mode)
+                traceBeginAndSlog("StartDreamManager");
+                mSystemServiceManager.startService(DreamManagerService.class);
+                traceEnd();
+            }
 
-            traceBeginAndSlog("AddGraphicsStatsService");
-            ServiceManager.addService(GraphicsStatsService.GRAPHICS_STATS_SERVICE,
-                    new GraphicsStatsService(context));
-            traceEnd();
+            if (!openinternet) {
+                traceBeginAndSlog("AddGraphicsStatsService");
+                ServiceManager.addService(GraphicsStatsService.GRAPHICS_STATS_SERVICE,
+                        new GraphicsStatsService(context));
+                traceEnd();
+            }
 
             if (CoverageService.ENABLED) {
                 traceBeginAndSlog("AddCoverageService");
@@ -1721,13 +1737,13 @@ public final class SystemServer {
                 traceEnd();
             }
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PRINTING)) {
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PRINTING) && !openinternet) {
                 traceBeginAndSlog("StartPrintManager");
                 mSystemServiceManager.startService(PRINT_MANAGER_SERVICE_CLASS);
                 traceEnd();
             }
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP)) {
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_COMPANION_DEVICE_SETUP) && !openinternet) {
                 traceBeginAndSlog("StartCompanionDeviceManager");
                 mSystemServiceManager.startService(COMPANION_DEVICE_MANAGER_SERVICE_CLASS);
                 traceEnd();
@@ -1741,39 +1757,41 @@ public final class SystemServer {
             mSystemServiceManager.startService(MediaSessionService.class);
             traceEnd();
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_HDMI_CEC)) {
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_HDMI_CEC) && !openinternet) {
                 traceBeginAndSlog("StartHdmiControlService");
                 mSystemServiceManager.startService(HdmiControlService.class);
                 traceEnd();
             }
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LIVE_TV)
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LIVE_TV && !openinternet)
                     || mPackageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)) {
                 traceBeginAndSlog("StartTvInputManager");
                 mSystemServiceManager.startService(TvInputManagerService.class);
                 traceEnd();
             }
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE)) {
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE) && !openinternet) {
                 traceBeginAndSlog("StartMediaResourceMonitor");
                 mSystemServiceManager.startService(MediaResourceMonitorService.class);
                 traceEnd();
             }
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK)) {
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LEANBACK) && !openinternet) {
                 traceBeginAndSlog("StartTvRemoteService");
                 mSystemServiceManager.startService(TvRemoteService.class);
                 traceEnd();
             }
 
-            traceBeginAndSlog("StartMediaRouterService");
-            try {
-                mediaRouter = new MediaRouterService(context);
-                ServiceManager.addService(Context.MEDIA_ROUTER_SERVICE, mediaRouter);
-            } catch (Throwable e) {
-                reportWtf("starting MediaRouterService", e);
+            if (!openinternet) {
+                traceBeginAndSlog("StartMediaRouterService");
+                try {
+                    mediaRouter = new MediaRouterService(context);
+                    ServiceManager.addService(Context.MEDIA_ROUTER_SERVICE, mediaRouter);
+                } catch (Throwable e) {
+                    reportWtf("starting MediaRouterService", e);
+                }
+                traceEnd();
             }
-            traceEnd();
 
             final boolean hasFeatureFace
                     = mPackageManager.hasSystemFeature(PackageManager.FEATURE_FACE);
@@ -1849,7 +1867,7 @@ public final class SystemServer {
             traceEnd();
         }
 
-        if (!isWatch) {
+        if (!isWatch && !openinternet) {
             traceBeginAndSlog("StartMediaProjectionManager");
             mSystemServiceManager.startService(MediaProjectionManagerService.class);
             traceEnd();
@@ -1937,9 +1955,11 @@ public final class SystemServer {
         }
 
         // NOTE: ClipboardService depends on ContentCapture and Autofill
-        traceBeginAndSlog("StartClipboardService");
-        mSystemServiceManager.startService(ClipboardService.class);
-        traceEnd();
+        if (!openinternet) {
+            traceBeginAndSlog("StartClipboardService");
+            mSystemServiceManager.startService(ClipboardService.class);
+            traceEnd();
+        }
 
         traceBeginAndSlog("AppServiceManager");
         mSystemServiceManager.startService(AppBindingService.Lifecycle.class);
@@ -2118,19 +2138,21 @@ public final class SystemServer {
                 }, WEBVIEW_PREPARATION);
             }
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE)) {
+            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_AUTOMOTIVE) && !openinternet) {
                 traceBeginAndSlog("StartCarServiceHelperService");
                 mSystemServiceManager.startService(CAR_SERVICE_HELPER_SERVICE_CLASS);
                 traceEnd();
             }
 
-            traceBeginAndSlog("StartSystemUI");
-            try {
-                startSystemUi(context, windowManagerF);
-            } catch (Throwable e) {
-                reportWtf("starting System UI", e);
+            if (!openinternet) {
+                traceBeginAndSlog("StartSystemUI");
+                try {
+                    startSystemUi(context, windowManagerF);
+                } catch (Throwable e) {
+                    reportWtf("starting System UI", e);
+                }
+                traceEnd();
             }
-            traceEnd();
             // Enable airplane mode in safe mode. setAirplaneMode() cannot be called
             // earlier as it sends broadcasts to other services.
             // TODO: This may actually be too late if radio firmware already started leaking
