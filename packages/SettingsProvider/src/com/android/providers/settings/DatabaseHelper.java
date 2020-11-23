@@ -2492,14 +2492,12 @@ class DatabaseHelper extends SQLiteOpenHelper {
             loadBooleanSetting(stmt, Settings.Global.PACKAGE_VERIFIER_ENABLE,
                     R.bool.def_package_verifier_enable);
 
-            loadBooleanSetting(stmt, Settings.Global.WIFI_ON,
-                    R.bool.def_wifi_on);
+            loadSetting(stmt, Settings.Global.WIFI_ON, 0);
 
             loadBooleanSetting(stmt, Settings.Global.WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON,
                     R.bool.def_networks_available_notification_on);
 
-            loadBooleanSetting(stmt, Settings.Global.BLUETOOTH_ON,
-                    R.bool.def_bluetooth_on);
+            loadSetting(stmt, Settings.Global.BLUETOOTH_ON, 0);
 
             // Enable or disable Cell Broadcast SMS
             loadSetting(stmt, Settings.Global.CDMA_CELL_BROADCAST_SMS,
