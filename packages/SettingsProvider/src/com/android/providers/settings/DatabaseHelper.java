@@ -2480,6 +2480,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
             // stay on while plugged in
             loadSetting(stmt, Settings.Global.STAY_ON_WHILE_PLUGGED_IN, "2");
 
+            // do not turn off hotspot automatically!!
+            loadSetting(stmt, Settings.Global.SOFT_AP_TIMEOUT_ENABLED, 0);
+
             loadIntegerSetting(stmt, Settings.Global.WIFI_SLEEP_POLICY,
                     R.integer.def_wifi_sleep_policy);
 
