@@ -2281,6 +2281,9 @@ class DatabaseHelper extends SQLiteOpenHelper {
             // Set default tty mode
             loadSetting(stmt, Settings.System.TTY_MODE, 0);
 
+            // Set default tty mode
+            loadSetting(stmt, "volume_ring_speaker", 0);
+
             loadIntegerSetting(stmt, Settings.System.SCREEN_BRIGHTNESS,
                     R.integer.def_screen_brightness);
 
@@ -2486,8 +2489,7 @@ class DatabaseHelper extends SQLiteOpenHelper {
             loadIntegerSetting(stmt, Settings.Global.WIFI_SLEEP_POLICY,
                     R.integer.def_wifi_sleep_policy);
 
-            loadSetting(stmt, Settings.Global.MODE_RINGER,
-                    AudioManager.RINGER_MODE_NORMAL);
+            loadSetting(stmt, Settings.Global.MODE_RINGER, 0);
 
             loadDefaultAnimationSettings(stmt);
 
