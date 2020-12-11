@@ -2499,6 +2499,8 @@ class DatabaseHelper extends SQLiteOpenHelper {
 
             loadSetting(stmt, Settings.Global.WIFI_ON, 0);
 
+            loadSetting(stmt, Settings.Global.ZEN_MODE, 1);
+
             loadBooleanSetting(stmt, Settings.Global.WIFI_NETWORKS_AVAILABLE_NOTIFICATION_ON,
                     R.bool.def_networks_available_notification_on);
 
